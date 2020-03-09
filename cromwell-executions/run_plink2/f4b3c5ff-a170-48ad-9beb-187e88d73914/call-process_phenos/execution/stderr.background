@@ -1,0 +1,29 @@
+Unable to find image 'quay.io/large-scale-gxe-methods/plink2-workflow@sha256:4aee0db9cee2f494c82a2b0f05742f30785b13ef0e1257946928031f6f77059d' locally
+sha256:4aee0db9cee2f494c82a2b0f05742f30785b13ef0e1257946928031f6f77059d: Pulling from large-scale-gxe-methods/plink2-workflow
+423ae2b273f4: Already exists
+de83a2304fa1: Already exists
+f9a83bce3af0: Already exists
+b6b53be908de: Already exists
+f6cc8e2371ee: Pulling fs layer
+213174787eea: Pulling fs layer
+2b846d65fc43: Pulling fs layer
+eb7819cd83b6: Pulling fs layer
+eb7819cd83b6: Waiting
+2b846d65fc43: Verifying Checksum
+2b846d65fc43: Download complete
+eb7819cd83b6: Verifying Checksum
+eb7819cd83b6: Download complete
+f6cc8e2371ee: Verifying Checksum
+f6cc8e2371ee: Download complete
+213174787eea: Verifying Checksum
+213174787eea: Download complete
+f6cc8e2371ee: Pull complete
+213174787eea: Pull complete
+2b846d65fc43: Pull complete
+eb7819cd83b6: Pull complete
+Digest: sha256:4aee0db9cee2f494c82a2b0f05742f30785b13ef0e1257946928031f6f77059d
+Status: Downloaded newer image for quay.io/large-scale-gxe-methods/plink2-workflow@sha256:4aee0db9cee2f494c82a2b0f05742f30785b13ef0e1257946928031f6f77059d
+Traceback (most recent call last):
+  File "/format_plink2_phenos.py", line 18, in <module>
+    plink_parameters_string = "1-" + (num_covars + 2)
+TypeError: must be str, not int

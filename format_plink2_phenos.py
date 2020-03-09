@@ -12,4 +12,9 @@ phenos = (pd.read_csv(phenofile, sep=delimiter, na_values=missing)
 	.loc[:, output_cols])
      
 phenos.columns.values[:2] = ["FID", "IID"]
-phenos.to_csv("plink2_phenotypes.csv", sep=" ", index=False, na_rep="NA")
+phenos.to_csv("plink2_phenotypes.txt", sep=" ", index=False, na_rep="NA")
+
+num_covars = len(covars) + 1
+plink_parameters_string = "1-" + str(num_covars + 2)
+with open("plink2_parameters_string.txt", "w") as f:
+	f.write(plink_parameters_string)

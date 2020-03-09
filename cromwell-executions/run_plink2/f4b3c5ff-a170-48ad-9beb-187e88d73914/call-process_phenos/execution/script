@@ -1,0 +1,36 @@
+#!/bin/bash
+
+cd /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution
+tmpDir=$(mkdir -p "/cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/tmp.acc12471" && echo "/cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/tmp.acc12471")
+chmod 777 "$tmpDir"
+export _JAVA_OPTIONS=-Djava.io.tmpdir="$tmpDir"
+export TMPDIR="$tmpDir"
+export HOME="$HOME"
+(
+cd /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution
+
+)
+outf4b3c5ff="${tmpDir}/out.$$" errf4b3c5ff="${tmpDir}/err.$$"
+mkfifo "$outf4b3c5ff" "$errf4b3c5ff"
+trap 'rm "$outf4b3c5ff" "$errf4b3c5ff"' EXIT
+tee '/cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution/stdout' < "$outf4b3c5ff" &
+tee '/cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution/stderr' < "$errf4b3c5ff" >&2 &
+(
+cd /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution
+
+
+python3 /format_plink2_phenos.py /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/inputs/1444227553/example.pheno sampleid pheno1 "cov1 cov2 cov3" cov1 "," NaN
+)  > "$outf4b3c5ff" 2> "$errf4b3c5ff"
+echo $? > /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution/rc.tmp
+(
+# add a .file in every empty directory to facilitate directory delocalization on the cloud
+cd /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution
+find . -type d -exec sh -c '[ -z "$(ls -A '"'"'{}'"'"')" ] && touch '"'"'{}'"'"'/.file' \;
+)
+(
+cd /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution
+sync
+
+
+)
+mv /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution/rc.tmp /cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution/rc

@@ -1,0 +1,3 @@
+#!/bin/bash
+'/bin/bash' '/Users/magdalenasevilla/plink2-workflow/cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution/script.submit' < /dev/null || { rc=$?; if [ "$rc" -gt "128" ]; then echo $rc; else echo -1; fi } > /Users/magdalenasevilla/plink2-workflow/cromwell-executions/run_plink2/f4b3c5ff-a170-48ad-9beb-187e88d73914/call-process_phenos/execution/rc &
+echo $!

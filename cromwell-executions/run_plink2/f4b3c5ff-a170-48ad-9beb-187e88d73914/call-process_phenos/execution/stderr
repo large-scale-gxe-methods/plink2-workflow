@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/format_plink2_phenos.py", line 18, in <module>
+    plink_parameters_string = "1-" + (num_covars + 2)
+TypeError: must be str, not int

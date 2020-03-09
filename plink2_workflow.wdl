@@ -18,7 +18,8 @@ task process_phenos {
 	}
 
         output {
-                File pheno_fmt = "plink2_phenotypes.csv"
+                File pheno_fmt = "plink2_phenotypes.txt"
+                File plink2_parameter_file = "plink2_parameters_string.txt"
 	}
 }
 
@@ -31,9 +32,12 @@ task run_interaction {
     File phenofile
     String outcome
 	Boolean binary_outcome
+	File plink2_parameter_file
 	String covar_headers
 	Int? memory = 10
 	Int? disk = 20
+	
+	String plink2_parameter_string = read_string(plink2_parameter_file)
 
         command {
         	echo "" > resource_usage.log
@@ -46,7 +50,7 @@ task run_interaction {
 				--pheno ${phenofile} \
 				--covar-name ${covar_headers} \
 				--glm interaction \
-				--parameters 1-7 \
+				--parameters ${plink2_parameter_string} \
 				--out plink2_res
    		 }
 
@@ -141,6 +145,7 @@ workflow run_plink2 {
  				outcome = outcome,
  				binary_outcome = binary_outcome,
  				covar_headers = covar_headers,
+ 				plink2_parameter_file = process_phenos.plink2_parameter_file,
  				memory = memory,	
  				disk = disk
  		}
@@ -165,7 +170,7 @@ workflow run_plink2 {
  	}
 
 	parameter_meta {
- 	genofiles: "Array of genotype filepaths in .bgen format. NEEDS UPDATING RE: PLINK FORMAT"
+ 	genofiles: "Array of genotype filepaths in .bgen .psam .pvar format. NEEDS UPDATING RE: PLINK FORMAT"
  	phenofile: "Phenotype filepath."
  	sample_id_header: "Column header name of sample ID in phenotype file."
  	outcome: "Column header name of phenotype data in phenotype file."
@@ -181,6 +186,6 @@ workflow run_plink2 {
 	meta {
 		author: "Kenny Westerman"
 		email: "kewesterman@mgh.harvard.edu"
-		description: "Run interaction tests using the ProbABEL package and return summary statistics for 1-DF and 2-DF tests."
+		description: "Run interaction tests using the Plink2 package and return summary statistics for 1-DF and 2-DF tests."
 	}
 }
