@@ -1,10 +1,9 @@
 import sys
 import pandas as pd
 
-phenofile, sample_id_header, outcome, covar_headers, exposure, delimiter, missing = sys.argv[1:8]
-covars = covar_headers.split(" ")
+phenofile, sample_id_header, outcome, exposure, covar_names, delimiter, missing = sys.argv[1:8]
 
-covars.remove(exposure)
+covars = [] if covar_names == "" else covar_names.split(" ")
 
 output_cols = ["FID", sample_id_header, outcome, exposure] + covars
 phenos = (pd.read_csv(phenofile, sep=delimiter, na_values=missing)

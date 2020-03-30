@@ -3,13 +3,13 @@ task process_phenos {
 	File phenofile
 	String sample_id_header
 	String outcome
-	String covar_headers
 	String exposure
+	String? covar_names = ""
 	String? delimiter = ","
 	String? missing = "NA"
 
 	command {
-		python3 /format_plink2_phenos.py ${phenofile} ${sample_id_header} ${outcome} "${covar_headers}" ${exposure} "${delimiter}" ${missing}
+		python3 /format_plink2_phenos.py ${phenofile} ${sample_id_header} ${outcome} ${exposure} "${covar_names}" "${delimiter}" ${missing}
 	}
 
 	runtime {
@@ -26,17 +26,19 @@ task process_phenos {
 
 task run_interaction {
   
-    File genofile_pgen
-    File genofile_psam
-    File genofile_pvar
-    File phenofile
-    String outcome
+	File genofile_pgen
+	File genofile_psam
+	File genofile_pvar
+	File phenofile
+	String outcome
 	Boolean binary_outcome
+	String exposure
+	String? covar_names = ""
 	File plink2_parameter_file
-	String covar_headers
 	Int? memory = 10
 	Int? disk = 20
 	
+	String covar_name_str = exposure + " " + covar_names
 	String plink2_parameter_string = read_string(plink2_parameter_file)
 
         command {
@@ -48,7 +50,7 @@ task run_interaction {
 				--allow-extra-chr \
 				--pheno-name ${outcome} \
 				--pheno ${phenofile} \
-				--covar-name ${covar_headers} \
+				--covar-name ${covar_name_str} \
 				--glm interaction \
 				--parameters ${plink2_parameter_string} \
 				--out plink2_res
@@ -116,8 +118,8 @@ workflow run_plink2 {
 	String sample_id_header
 	String outcome
 	Boolean binary_outcome
-	String covar_headers
-	String exposures
+	String exposure_names
+	String? covar_names
 	String? delimiter
 	String? missing
 	Boolean? robust
@@ -129,8 +131,8 @@ workflow run_plink2 {
 			phenofile = phenofile,
 			sample_id_header = sample_id_header,
 			outcome = outcome,
-			covar_headers = covar_headers,
-			exposure = exposures,
+			exposure = exposure_names,
+			covar_names = covar_names,
 			delimiter = delimiter,
 			missing = missing
 	}
@@ -144,7 +146,8 @@ workflow run_plink2 {
  				phenofile = process_phenos.pheno_fmt,
  				outcome = outcome,
  				binary_outcome = binary_outcome,
- 				covar_headers = covar_headers,
+				exposure = exposure_names,
+ 				covar_names = covar_names,
  				plink2_parameter_file = process_phenos.plink2_parameter_file,
  				memory = memory,	
  				disk = disk
@@ -155,7 +158,7 @@ workflow run_plink2 {
  		call standardize_output {
  			input:
  				resfile = resfile,
- 				exposure = exposures
+ 				exposure = exposure_names
  		}
  	}	
  
@@ -170,22 +173,24 @@ workflow run_plink2 {
  	}
 
 	parameter_meta {
- 	genofiles: "Array of genotype filepaths in .bgen .psam .pvar format. NEEDS UPDATING RE: PLINK FORMAT"
- 	phenofile: "Phenotype filepath."
- 	sample_id_header: "Column header name of sample ID in phenotype file."
- 	outcome: "Column header name of phenotype data in phenotype file."
- 	binary_outcome: "Boolean: is the outcome binary? Otherwise, quantitative is assumed."
- 	covar_headers: "Column header names of the selected covariates in the pheno data file (space-delimited)."
- 	exposures: "Column header name(s) of the covariates to use as exposures for genotype interaction testing (space-delimited). All exposures must also be provided as covariates."
- 	delimiter: "Delimiter used in the phenotype file."
- 	missing: "Missing value key of phenotype file."
- 	memory: "Requested memory (in GB)."
- 	disk: "Requested disk space (in GB)."
- 	}
+		genofiles_pgen: "Array of PLINK2 genotype (.pgen) filepaths."
+		genofiles_psam: "Array of PLINK2 sample (.psam) filepaths."
+		genofiles_pvar: "Array of PLINK2 variant (.pvar) filepaths."
+		phenofile: "Phenotype filepath. Does not need to be in PLINK format (will be processed as part of the workflow)."	
+		sample_id_header: "Optional column header name of sample ID in phenotype file."
+		outcome: "Column header name of phenotype data in phenotype file."
+                binary_outcome: "Boolean: is the outcome binary? Otherwise, quantitative is assumed."
+		exposure_names: "Column header name(s) of the exposures for genotype interaction testing (space-delimited). Only one exposures is currently allowed."
+		covar_names: "Column header name(s) of any covariates for which only main effects should be included selected covariates in the pheno data file (space-delimited). This set should not overlap with exposures or int_covar_names."
+		delimiter: "Delimiter used in the phenotype file."
+		missing: "Missing value key of phenotype file."
+		cpu: "Minimum number of requested cores."
+		disk: "Requested disk space (in GB)."
+	}
 
 	meta {
 		author: "Kenny Westerman"
 		email: "kewesterman@mgh.harvard.edu"
-		description: "Run interaction tests using the Plink2 package and return summary statistics for 1-DF and 2-DF tests."
+		description: "Run interaction tests using PLINK2 and return summary statistics for 1-DF and 2-DF tests."
 	}
 }

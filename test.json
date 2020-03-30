@@ -1,15 +1,14 @@
 {
-  "run_plink2.covar_headers": "cov1 cov2 cov3",
-  "run_plink2.sample_id_header": "sampleid",
-  "run_plink2.robust": "true",
-  "run_plink2.phenofile": "testfiles/example.pheno",
-  "run_plink2.delimiter": ",",
-  "run_plink2.genofiles_pgen": ["testfiles/example.pgen"],
   "run_plink2.genofiles_psam": ["testfiles/example.psam"],
   "run_plink2.genofiles_pvar": ["testfiles/example.pvar"],
-  "run_plink2.exposures": "cov1",
   "run_plink2.outcome": "pheno1",
-  "run_plink2.missing": "NaN",
-  "run_plink2.binary_outcome": "false"
+  "run_plink2.genofiles_pgen": ["testfiles/example.pgen"],
+  "run_plink2.phenofile": "testfiles/example.pheno",
+  "run_plink2.sample_id_header": "sampleid",
+  "run_plink2.binary_outcome": "false",
+  "run_plink2.exposure_names": "cov1",
+  "run_plink2.covar_names": "cov2 cov3",
+  "run_plink2.delimiter": ",",
+  "run_plink2.missing": "NaN"
 }
 
