@@ -42,18 +42,19 @@ task run_interaction {
 	String plink2_parameter_string = read_string(plink2_parameter_file)
 
         command {
-        	echo "" > resource_usage.log
-        	dstat -c -d -m --nocolor 10 1>>resource_usage.log &
-			/plink2 --pgen ${genofile_pgen} \
-				--psam ${genofile_psam} \
-				--pvar ${genofile_pvar} \
-				--allow-extra-chr \
-				--pheno-name ${outcome} \
-				--pheno ${phenofile} \
-				--covar-name ${covar_name_str} \
-				--glm interaction \
-				--parameters ${plink2_parameter_string} \
-				--out plink2_res
+		echo "" > resource_usage.log
+		atop -x -P PRC,PRM,PRD | grep '(GEM)' 1>>resource_usage.log &
+
+		/plink2 --pgen ${genofile_pgen} \
+			--psam ${genofile_psam} \
+			--pvar ${genofile_pvar} \
+			--allow-extra-chr \
+			--pheno-name ${outcome} \
+			--pheno ${phenofile} \
+			--covar-name ${covar_name_str} \
+			--glm interaction \
+			--parameters ${plink2_parameter_string} \
+			--out plink2_res
    		 }
 
 
@@ -181,7 +182,7 @@ workflow run_plink2 {
 		outcome: "Column header name of phenotype data in phenotype file."
                 binary_outcome: "Boolean: is the outcome binary? Otherwise, quantitative is assumed."
 		exposure_names: "Column header name(s) of the exposures for genotype interaction testing (space-delimited). Only one exposures is currently allowed."
-		covar_names: "Column header name(s) of any covariates for which only main effects should be included selected covariates in the pheno data file (space-delimited). This set should not overlap with exposures or int_covar_names."
+		covar_names: "Column header name(s) of any covariates for which only main effects should be included (space-delimited). This set should not overlap with exposures or int_covar_names."
 		delimiter: "Delimiter used in the phenotype file."
 		missing: "Missing value key of phenotype file."
 		cpu: "Minimum number of requested cores."
