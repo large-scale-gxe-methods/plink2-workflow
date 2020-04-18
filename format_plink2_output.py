@@ -1,18 +1,23 @@
 import sys
 import pandas as pd
+import numpy as np
 from scipy.stats import chi2
 
 
-resfile, exposure, outfile = sys.argv[1:4]
+resfile, exposure, binary_outcome, outfile = sys.argv[1:5]
 
 res = pd.read_csv(resfile, sep="\t")
 
-res = (pd.read_csv(resfile, sep="\t")
-                .rename(columns={'ID': 'SNPID', 'REF': 'Allele1', 'ALT':
-                                 'Allele2'})
-                .drop_duplicates(subset=['SNPID', 'TEST'])
-                .set_index(['SNPID', 'Allele1', 'Allele2'])
-                .filter(['TEST', 'BETA', 'SE', 'P'])
+if binary_outcome == "true":  # Different columns names for logistic regression
+    res['logOR'] = np.log(res['OR'])
+    res = res.rename(columns={'logOR': 'BETA', 'LOG(OR)_SE': 'SE'})
+
+res = (res
+       .rename(columns={'ID': 'SNPID', 'REF': 'Allele1', 'ALT':
+                        'Allele2'})
+       .drop_duplicates(subset=['SNPID', 'TEST'])
+       .set_index(['SNPID', 'Allele1', 'Allele2'])
+       .filter(['TEST', 'BETA', 'SE', 'P'])
        .query('TEST == "ADD" | TEST == "ADDx' + exposure + '"')
                 .pivot(columns='TEST')
        .reset_index())

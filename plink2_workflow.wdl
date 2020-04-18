@@ -50,11 +50,14 @@ task run_interaction {
 			--pvar ${genofile_pvar} \
 			--allow-extra-chr \
 			--pheno-name ${outcome} \
+			${true="--1" false="" binary_outcome} \
 			--pheno ${phenofile} \
 			--covar-name ${covar_name_str} \
 			--glm interaction \
 			--parameters ${plink2_parameter_string} \
 			--out plink2_res
+
+			mv plink2_res.${outcome}.glm.${true='logistic' false='linear' binary_outcome} plink2_res
    		 }
 
 
@@ -65,8 +68,9 @@ task run_interaction {
 	}
 
         output {
-            File res = "plink2_res.${outcome}.glm.linear"
-			File resource_usage = "resource_usage.log"
+	    	#File res = "plink2_res." + ${outcome} + ".glm." + ${true='logistic' false='linear' binary_outcome}
+		File res = "plink2_res"
+		File resource_usage = "resource_usage.log"
         }
 }
 
@@ -74,11 +78,12 @@ task standardize_output {
 
 	File resfile
 	String exposure
+	Boolean binary_outcome
 	String outfile_base = basename(resfile)
 	String outfile = "${outfile_base}.fmt"
 
 	command {
-		python3 /format_plink2_output.py ${resfile} ${exposure} ${outfile}
+		python3 /format_plink2_output.py ${resfile} ${exposure} ${binary_outcome} ${outfile}
 	}
 
 	runtime {
@@ -159,7 +164,8 @@ workflow run_plink2 {
  		call standardize_output {
  			input:
  				resfile = resfile,
- 				exposure = exposure_names
+ 				exposure = exposure_names,
+				binary_outcome = binary_outcome
  		}
  	}	
  

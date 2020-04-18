@@ -1,0 +1,14 @@
+{
+  "run_plink2.genofiles_psam": ["testfiles/example.psam"],
+  "run_plink2.genofiles_pvar": ["testfiles/example.pvar"],
+  "run_plink2.outcome": "pheno2",
+  "run_plink2.genofiles_pgen": ["testfiles/example.pgen"],
+  "run_plink2.phenofile": "testfiles/example.pheno",
+  "run_plink2.sample_id_header": "sampleid",
+  "run_plink2.binary_outcome": "true",
+  "run_plink2.exposure_names": "cov1",
+  "run_plink2.covar_names": "cov2 cov3",
+  "run_plink2.delimiter": ",",
+  "run_plink2.missing": "NaN"
+}
+
