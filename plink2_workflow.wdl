@@ -4,9 +4,9 @@ task process_phenos {
 	String sample_id_header
 	String outcome
 	String exposure
-	String? covar_names = ""
-	String? delimiter = ","
-	String? missing = "NA"
+	String? covar_names
+	String? delimiter
+	String? missing
 
 	command {
 		python3 /format_plink2_phenos.py ${phenofile} ${sample_id_header} ${outcome} ${exposure} "${covar_names}" "${delimiter}" ${missing}
@@ -33,10 +33,11 @@ task run_interaction {
 	String outcome
 	Boolean binary_outcome
 	String exposure
-	String? covar_names = ""
+	String? covar_names
 	File plink2_parameter_file
-	Int? memory = 10
-	Int? disk = 20
+	Int? memory
+	Int? disk
+	Int threads
 	
 	String covar_name_str = exposure + " " + covar_names
 	String plink2_parameter_string = read_string(plink2_parameter_file)
@@ -55,6 +56,7 @@ task run_interaction {
 			--covar-name ${covar_name_str} \
 			--glm interaction \
 			--parameters ${plink2_parameter_string} \
+			--threads ${threads} \
 			--out plink2_res
 
 			mv plink2_res.${outcome}.glm.${true='logistic' false='linear' binary_outcome} plink2_res
@@ -125,12 +127,13 @@ workflow run_plink2 {
 	String outcome
 	Boolean binary_outcome
 	String exposure_names
-	String? covar_names
-	String? delimiter
-	String? missing
+	String? covar_names = ""
+	String? delimiter = ","
+	String? missing = "NA"
 	Boolean? robust
-	Int? memory
-	Int? disk
+	Int? memory = 10
+	Int? disk = 20
+	Int? threads = 1
 
 	call process_phenos {
 		input:
@@ -156,7 +159,8 @@ workflow run_plink2 {
  				covar_names = covar_names,
  				plink2_parameter_file = process_phenos.plink2_parameter_file,
  				memory = memory,	
- 				disk = disk
+ 				disk = disk,
+				threads = threads
  		}
  	}
  
