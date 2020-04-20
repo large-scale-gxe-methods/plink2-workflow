@@ -42,8 +42,8 @@ task run_interaction {
 	String plink2_parameter_string = read_string(plink2_parameter_file)
 
         command {
-		echo "" > resource_usage.log
-		atop -x -P PRC,PRM,PRD | grep '(GEM)' 1>>resource_usage.log &
+		touch resource_usage.log
+		atop -x -P CPU,DSK,PRM 1 | grep -e CPU -e DSK -e '(plink2)' 1>>resource_usage.log &
 
 		/plink2 --pgen ${genofile_pgen} \
 			--psam ${genofile_psam} \
