@@ -38,13 +38,14 @@ task run_interaction {
 	Int? memory
 	Int? disk
 	Int threads
+	Int monitoring_freq
 	
 	String covar_name_str = exposure + " " + covar_names
 	String plink2_parameter_string = read_string(plink2_parameter_file)
 
         command {
-		touch resource_usage.log
-		atop -x -P CPU,DSK,PRM 1 | grep -e CPU -e DSK -e '(plink2)' 1>>resource_usage.log &
+		dstat -c -d -m --nocolor 1 > system_resource_usage.log &
+		atop -x -P PRM 1 | grep '(GEM)' > process_resource_usage.log &
 
 		/plink2 --pgen ${genofile_pgen} \
 			--psam ${genofile_psam} \
@@ -70,9 +71,9 @@ task run_interaction {
 	}
 
         output {
-	    	#File res = "plink2_res." + ${outcome} + ".glm." + ${true='logistic' false='linear' binary_outcome}
 		File res = "plink2_res"
-		File resource_usage = "resource_usage.log"
+		File system_resource_usage = "system_resource_usage.log"
+		File process_resource_usage = "process_resource_usage.log"
         }
 }
 
@@ -134,6 +135,7 @@ workflow run_plink2 {
 	Int? memory = 10
 	Int? disk = 20
 	Int? threads = 1
+	Int? monitoring_freq = 1
 
 	call process_phenos {
 		input:
@@ -160,7 +162,8 @@ workflow run_plink2 {
  				plink2_parameter_file = process_phenos.plink2_parameter_file,
  				memory = memory,	
  				disk = disk,
-				threads = threads
+				threads = threads,
+				monitoring_freq = monitoring_freq
  		}
  	}
  
@@ -179,8 +182,9 @@ workflow run_plink2 {
  	}
 
          output {
-                 File results = cat_results.all_results
- 		Array[File] resource_usage = run_interaction.resource_usage
+		File results = cat_results.all_results
+ 		Array[File] system_resource_usage = run_interaction.system_resource_usage
+ 		Array[File] process_resource_usage = run_interaction.process_resource_usage
  	}
 
 	parameter_meta {
@@ -197,6 +201,7 @@ workflow run_plink2 {
 		missing: "Missing value key of phenotype file."
 		cpu: "Minimum number of requested cores."
 		disk: "Requested disk space (in GB)."
+		monitoring_freq: "Delay between each output for process monitoring (in seconds). Default is 1 second."
 	}
 
 	meta {
