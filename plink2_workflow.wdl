@@ -45,7 +45,7 @@ task run_interaction {
 
         command {
 		dstat -c -d -m --nocolor 1 > system_resource_usage.log &
-		atop -x -P PRM 1 | grep '(GEM)' > process_resource_usage.log &
+		atop -x -P PRM 1 | grep '(plink2)' > process_resource_usage.log &
 
 		/plink2 --pgen ${genofile_pgen} \
 			--psam ${genofile_psam} \
